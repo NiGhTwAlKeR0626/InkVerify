@@ -1,0 +1,68 @@
+{
+  "demo_data": true,
+  "trained_at": "2026-11-20T12:29:14",
+  "writers": {
+    "train": 8,
+    "val": 2,
+    "test": 2
+  },
+  "pairs": {
+    "train": 1680,
+    "test": 348
+  },
+  "threshold": 0.72,
+  "roc_auc": 0.9809,
+  "far": 0.037,
+  "frr": 0.0909,
+  "far_skilled": 0.0417,
+  "far_random": 0.0,
+  "confusion_matrix": [
+    [
+      208,
+      8
+    ],
+    [
+      12,
+      120
+    ]
+  ],
+  "report": {
+    "needs_review": {
+      "precision": 0.9454545454545454,
+      "recall": 0.9629629629629629,
+      "f1-score": 0.9541284403669725,
+      "support": 216.0
+    },
+    "consistent_pair": {
+      "precision": 0.9375,
+      "recall": 0.9090909090909091,
+      "f1-score": 0.9230769230769231,
+      "support": 132.0
+    },
+    "accuracy": 0.9425287356321839,
+    "macro avg": {
+      "precision": 0.9414772727272727,
+      "recall": 0.936026936026936,
+      "f1-score": 0.9386026817219478,
+      "support": 348.0
+    },
+    "weighted avg": {
+      "precision": 0.9424373040752352,
+      "recall": 0.9425287356321839,
+      "f1-score": 0.9423502786362641,
+      "support": 348.0
+    }
+  },
+  "feature_importance": {
+    "hog_cosine": 0.3925,
+    "hog_delta_mean": 0.0598,
+    "hog_delta_std": 0.1876,
+    "hog_delta_q90": 0.1062,
+    "ink_ratio_diff": 0.0115,
+    "aspect_diff": 0.0491,
+    "centroid_dist": 0.0181,
+    "hprofile_corr": 0.0402,
+    "vprofile_corr": 0.0235,
+    "thumb_corr": 0.1115
+  }
+}

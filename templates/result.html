@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Signature comparison - InkVerify{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <h1>Signature comparison</h1>
+  <p class="meta"><span>{{ case }}</span>{% if model_ready %}<span>{{ per_ref|length }} known</span>{% endif %}</p>
+</div>
+
+{% if model_ready %}
+<div class="grid2">
+  <section class="panel">
+    <h2 class="cap">Result</h2>
+    <p class="stamp {{ 'ok' if consistent else 'bad' }}">{{ status }}</p>
+    <svg class="gauge" viewBox="0 0 120 72" role="img" aria-label="Score {{ '%.0f'|format(score*100) }} percent, threshold {{ '%.0f'|format(threshold*100) }} percent">
+      <path class="g-track" d="M10 62 A50 50 0 0 1 110 62" pathLength="100"/>
+      <path class="g-fill {{ 'ok' if consistent else 'bad' }}" d="M10 62 A50 50 0 0 1 110 62" pathLength="100" stroke-dasharray="{{ gauge.fill }} 100"/>
+      <line class="g-tick" x1="{{ gauge.x1 }}" y1="{{ gauge.y1 }}" x2="{{ gauge.x2 }}" y2="{{ gauge.y2 }}"/>
+      <text x="60" y="56" class="g-num">{{ "%.1f"|format(score*100) }}</text>
+      <text x="60" y="68" class="g-unit">PERCENT MATCH</text>
+    </svg>
+    <p class="dim center">Tick marks the decision threshold, {{ "%.0f"|format(threshold*100) }}%.</p>
+    {% if borderline %}<p class="notice">Close to the threshold. Treat as inconclusive.</p>{% endif %}
+    {% if ref_warning %}<p class="notice">The known specimens agree poorly with each other ({{ "%.0f"|format(ref_consistency*100) }}%). Try cleaner or more typical specimens.</p>{% endif %}
+    {% if metrics.demo_data %}<p class="notice"><b>Demo model.</b> Trained on synthetic data - this score tests the software only.</p>{% endif %}
+  </section>
+
+  <section class="panel">
+    <h2 class="cap">Overlay <span class="dim">K{{ best + 1 }} against Q</span></h2>
+    <div class="paper"><img src="data:image/png;base64,{{ overlay }}" alt="Overlay of the closest known specimen (blue) and the questioned signature (red)"></div>
+    <ul class="legend"><li><i class="k"></i>Known K{{ best + 1 }}</li><li><i class="q"></i>Questioned</li><li><i class="o"></i>Overlap</li></ul>
+  </section>
+</div>
+
+<div class="grid2">
+  <section class="panel">
+    <h2 class="cap">Similarity indicators <span class="dim">averaged over K</span></h2>
+    <ul class="inds">
+    {% for name, v in inds %}
+      <li><span>{{ name }}</span><span class="ibar"><b style="width:{{ (v*100)|round|int }}%"></b></span><span class="num">{{ (v*100)|round|int }}</span></li>
+    {% endfor %}
+    </ul>
+    <p class="dim">Descriptive measures of the pair. The decision comes from the model, not from these bars.</p>
+  </section>
+
+  <section class="panel">
+    <h2 class="cap">Per specimen</h2>
+    <table><tr><th>ID</th><th class="num">Match</th></tr>
+    {% for s in per_ref %}<tr{% if loop.index0 == best %} class="best"{% endif %}><td>K{{ loop.index }}{% if loop.index0 == best %} <span class="dim">closest</span>{% endif %}</td><td class="num">{{ "%.1f"|format(s*100) }}%</td></tr>{% endfor %}</table>
+    {% if metrics.roc_auc %}<p class="dim">Model on unseen writers: AUC {{ metrics.roc_auc }}, false accept {{ metrics.far }}, false reject {{ metrics.frr }}.</p>{% endif %}
+  </section>
+</div>
+
+<textarea id="summary-text" hidden>{{ summary }}</textarea>
+<div class="actions">
+  <button class="btn" id="save-summary" type="button" data-filename="inkverify-{{ case }}.txt">Save summary</button>
+  <button class="btn ghost" id="print-btn" type="button">Print</button>
+  <a class="btn ghost" href="/">New comparison</a>
+</div>
+{% else %}
+<section class="panel narrow">
+  <p class="stamp na">{{ status }}</p>
+  <p>No score without a trained model, on purpose. Run <code>python train_model.py</code> and try again.</p>
+  <div class="actions"><a class="btn ghost" href="/">Back</a></div>
+</section>
+{% endif %}
+<p class="dim">A low score is not a finding of forgery. Pen, speed, posture and photo quality all change a signature.</p>
+{% endblock %}

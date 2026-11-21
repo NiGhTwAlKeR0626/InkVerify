@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Document differencing - InkVerify{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <h1>Document differencing</h1>
+  <p class="meta"><span>{{ case }}</span><span>{{ result.width }} x {{ result.height }} px</span></p>
+</div>
+
+<div class="facts">
+  <div><b>{{ result.region_count }}</b><span>regions</span></div>
+  <div><b>{{ result.changed_percent }}<small>%</small></b><span>area changed</span></div>
+  <div><b class="{{ 'okc' if result.alignment == 'aligned' else 'badc' }}">{{ 'Good' if result.alignment == 'aligned' else 'Weak' }}</b><span>alignment &middot; {{ result.inliers }} matches</span></div>
+</div>
+{% if result.warning %}<p class="notice">{{ result.warning }}</p>{% endif %}
+
+<section class="panel flush">
+  <div class="vtools" role="toolbar" aria-label="Viewer mode">
+    <div class="seg">
+      <button type="button" data-mode="swipe" aria-pressed="true">Swipe</button>
+      <button type="button" data-mode="heat" aria-pressed="false">Heatmap</button>
+      <button type="button" data-mode="flicker" aria-pressed="false">Flicker</button>
+    </div>
+    <label class="chk"><input type="checkbox" id="show-boxes"> Show regions</label>
+  </div>
+  <div class="viewer" id="viewer" data-mode="swipe" style="aspect-ratio: {{ result.width }} / {{ result.height }}" data-w="{{ result.width }}" data-h="{{ result.height }}">
+    <img class="v-base" src="{{ urls.ref }}" alt="Original scan" draggable="false">
+    <img class="v-top" src="{{ urls.qry }}" alt="Questioned scan, aligned to the original" draggable="false">
+    <img class="v-diff" src="{{ urls.diff }}" alt="Difference heatmap" draggable="false">
+    <div class="v-boxes">
+      {% for r in result.regions %}<i class="box" data-i="{{ loop.index0 }}" style="left:{{ (r[0]/result.width*100)|round(2) }}%;top:{{ (r[1]/result.height*100)|round(2) }}%;width:{{ (r[2]/result.width*100)|round(2) }}%;height:{{ (r[3]/result.height*100)|round(2) }}%"></i>{% endfor %}
+    </div>
+    <div class="v-handle" id="handle" role="slider" tabindex="0" aria-label="Reveal position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span></span></div>
+    <span class="v-tag l">Original</span><span class="v-tag r">Questioned</span>
+  </div>
+</section>
+
+{% if result.regions %}
+<section class="panel">
+  <h2 class="cap">Regions <span class="dim">largest first - hover to locate</span></h2>
+  <div class="tablewrap"><table id="regions"><tr><th>#</th><th class="num">x</th><th class="num">y</th><th class="num">w</th><th class="num">h</th></tr>
+  {% for r in result.regions[:20] %}<tr data-i="{{ loop.index0 }}"><td>{{ loop.index }}</td><td class="num">{{ r[0] }}</td><td class="num">{{ r[1] }}</td><td class="num">{{ r[2] }}</td><td class="num">{{ r[3] }}</td></tr>{% endfor %}</table></div>
+  {% if result.regions|length > 20 %}<p class="dim">Showing 20 of {{ result.regions|length }}.</p>{% endif %}
+</section>
+{% else %}<p class="notice ok">No clear differences found.</p>{% endif %}
+
+<textarea id="summary-text" hidden>{{ summary }}</textarea>
+<div class="actions">
+  <button class="btn" id="save-summary" type="button" data-filename="inkverify-{{ case }}.txt">Save summary</button>
+  <a class="btn ghost" href="{{ urls.diff }}" download="inkverify-{{ case }}-diff.jpg">Save heatmap</a>
+  <button class="btn ghost" id="print-btn" type="button">Print</button>
+  <a class="btn ghost" href="/">New comparison</a>
+</div>
+<p class="dim">{{ result.note }}</p>
+{% endblock %}

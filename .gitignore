@@ -1,0 +1,18 @@
+# environments / caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+.vscode/
+.DS_Store
+
+# runtime files
+uploads/*
+!uploads/.gitkeep
+
+# datasets hold personal data: never publish them
+data/signatures/*
+!data/signatures/.gitkeep
+
+# NOTE: models/inkverify_model.joblib is intentionally NOT ignored,
+# so the hosted app has a model. Delete the file if you do not want it public.

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>{% block title %}InkVerify{% endblock %}</title>
+<script>(function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('iv-theme');if(t)d.dataset.theme=t;}catch(e){}})();</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="brand" href="{{ url_for('index') }}" aria-label="InkVerify home">
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 19 13l-7 8.5L5 13z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 9v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="9" r="1.4" fill="currentColor"/></svg>
+      <span class="brand-name">InkVerify</span>
+      <span class="brand-sub">examiner workbench</span>
+    </a>
+    <label class="switch" title="Switch between light and dark mode">
+      <span class="switch-text">Light</span>
+      <input type="checkbox" id="theme-switch" role="switch" aria-label="Dark mode">
+      <span class="track"><span class="thumb"></span></span>
+      <span class="switch-text">Dark</span>
+    </label>
+  </div>
+</header>
+
+<main class="wrap">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="disclaimer">Screening aid, not proof of forgery. Every result needs review by a qualified examiner.</p>
+    <div class="status">
+      <span class="dot {{ model_info.state }}"></span>
+      {% if model_info.state == 'ready' %}
+        <span>MODEL LOADED</span><span>THRESHOLD {{ "%.2f"|format(model_info.threshold) }}</span>
+        {% if model_info.auc %}<span>AUC {{ model_info.auc }}</span>{% endif %}
+        {% if model_info.writers %}<span>{{ model_info.writers }} WRITERS</span>{% endif %}
+        {% if model_info.demo %}<span class="demo">DEMO DATA</span>{% endif %}
+      {% elif model_info.state == 'outdated' %}<span>MODEL OUTDATED - RETRAIN</span>
+      {% else %}<span>NO MODEL - RUN train_model.py</span>{% endif %}
+      <span class="grow"></span>
+      <span>v{{ version }}</span><span>TEMP FILES AUTO-DELETE</span>
+    </div>
+  </div>
+</footer>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

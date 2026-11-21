@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <h1>Workbench</h1>
+  <p class="meta">Load material on the left. Photos from a phone work.</p>
+</div>
+
+{% with messages = get_flashed_messages() %}{% for m in messages %}<p class="notice err" role="alert">{{ m }}</p>{% endfor %}{% endwith %}
+{% if model_info.state != 'ready' %}<p class="notice">No usable model. Document differencing works now; for signature scores run <code>python train_model.py</code>.</p>{% endif %}
+
+<div class="bench">
+  <section class="input">
+    <div class="tabs" role="tablist" aria-label="Analysis type">
+      <button type="button" role="tab" data-tab="signature" aria-selected="true">Signature</button>
+      <button type="button" role="tab" data-tab="document" aria-selected="false">Document</button>
+    </div>
+
+    <div class="tabpanel" data-panel="signature" role="tabpanel">
+      <form action="/verify" method="post" enctype="multipart/form-data" data-check>
+        <p class="hint">Compare one questioned signature (Q) with two or more known specimens (K) from the same writer.</p>
+        <div class="field"><span class="lab">Known specimens <em>K, 2-10</em></span>
+          <label class="pick"><span class="cta" data-empty="Select or drop images">Select or drop images</span>
+            <input type="file" name="references" data-target="pv-k" data-label="K" accept=".png,.jpg,.jpeg,.bmp,image/png,image/jpeg,image/bmp" multiple required></label></div>
+        <div class="field"><span class="lab">Questioned signature <em>Q</em></span>
+          <label class="pick"><span class="cta" data-empty="Select or drop an image">Select or drop an image</span>
+            <input type="file" name="questioned" data-target="pv-q" data-label="Q" accept=".png,.jpg,.jpeg,.bmp,image/png,image/jpeg,image/bmp" required></label></div>
+        <button class="btn" type="submit" data-label="Run comparison">Run comparison</button>
+      </form>
+      <details class="guide"><summary>Capture guidance</summary>
+        <ul><li>Dark ink on plain paper; crop close to the writing.</li>
+        <li>Flat, even light. No shadow across the strokes.</li>
+        <li>Three to five known specimens beat two.</li>
+        <li>Use specimens written around the same time as Q.</li></ul></details>
+    </div>
+
+    <div class="tabpanel" data-panel="document" role="tabpanel">
+      <form action="/compare" method="post" enctype="multipart/form-data" data-check>
+        <p class="hint">Align two scans of the same page and mark what differs. Opens an interactive viewer.</p>
+        <div class="field"><span class="lab">Original scan <em>trusted copy</em></span>
+          <label class="pick"><span class="cta" data-empty="Select or drop an image">Select or drop an image</span>
+            <input type="file" name="original" data-target="pv-a" data-label="A" accept=".png,.jpg,.jpeg,.bmp,image/png,image/jpeg,image/bmp" required></label></div>
+        <div class="field"><span class="lab">Scan to check <em>doubtful copy</em></span>
+          <label class="pick"><span class="cta" data-empty="Select or drop an image">Select or drop an image</span>
+            <input type="file" name="questioned_doc" data-target="pv-b" data-label="B" accept=".png,.jpg,.jpeg,.bmp,image/png,image/jpeg,image/bmp" required></label></div>
+        <button class="btn" type="submit" data-label="Run differencing">Run differencing</button>
+      </form>
+      <details class="guide"><summary>Capture guidance</summary>
+        <ul><li>Whole page in frame, same orientation.</li>
+        <li>Even light; avoid glare and finger shadows.</li>
+        <li>Scans beat photos; 150-300 dpi is plenty.</li></ul></details>
+    </div>
+  </section>
+
+  <section class="pane" aria-label="Preview">
+    <div class="pane-head"><span>PREVIEW</span><span class="dim" id="pane-note">nothing loaded</span></div>
+    <div class="pane-body" data-pane="signature">
+      <h2 class="cap">Known specimens</h2><div class="slots" id="pv-k" data-empty="No specimens loaded"></div>
+      <h2 class="cap">Questioned</h2><div class="slots" id="pv-q" data-empty="No questioned signature"></div>
+    </div>
+    <div class="pane-body" data-pane="document">
+      <h2 class="cap">Original</h2><div class="slots" id="pv-a" data-empty="No original scan"></div>
+      <h2 class="cap">To check</h2><div class="slots" id="pv-b" data-empty="No second scan"></div>
+    </div>
+  </section>
+</div>
+{% endblock %}
