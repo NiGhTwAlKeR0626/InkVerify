@@ -258,5 +258,8 @@ def uploaded(name):
 
 
 if __name__ == "__main__":
-    app.run(host=os.environ.get("INKVERIFY_HOST", "127.0.0.1"), port=int(os.environ.get("PORT", 5000)),
-            debug=os.environ.get("INKVERIFY_DEBUG") == "1")
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8080)),
+        debug=False
+    )
