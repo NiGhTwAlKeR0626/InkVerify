@@ -59,3 +59,6 @@ Options (environment variables): `INKVERIFY_PASSWORD` (lock the site), `INKVERIF
 - Evaluation is writer-independent; the threshold is tuned on validation writers.
 - Signature uploads are deleted right after analysis; comparison images after 1 hour.
 - Scores are not calibrated probabilities and are not legal proof of forgery.
+=======
+# InkVerify
+>>>>>>> 7acf4ebdb79a07e931f574452736f0ab9dc4da8a
